@@ -33,13 +33,6 @@ void loop() {
     diode2 = log(diode2);
     diode3 = log(diode3);
 
-    if (diode2 < 30) {
-      diode2 *= diode2;
-    }
-    if (diode1 < 30) {
-      diode1 *= diode;
-    }
-
     if (diode2 != 0 || diode1 != 0 || diode3 != 0) {
       Serial.println(diode1);
       Serial.println(diode2);
