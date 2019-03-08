@@ -1,16 +1,12 @@
 #include<Servo.h>
 #define inPin0 0
 #define inPin1 1
-#define Bot 2
-#define Top 3
 Servo spinny;
 enum State {START, BOTH_ON, BOT_OFF, BOTH_OFF};
 int pin = 3;
 void setup() {
  // put your setup code here, to run once:
  spinny.attach(3);
- pinMode(Bot, INPUT);
- pinMode(Top, INPUT);
   Serial.begin(9600);
   Serial.println();
 }
@@ -18,43 +14,43 @@ void setup() {
 void loop() {
   int pinRead1 = analogRead(inPin1);
   int pinRead0 = analogRead(inPin0);
-  float pVolt0 = pinRead0 / 10;
-  float pVolt1 = pinRead1 / 10;// 1024.0;// + 5.0;
-  int sensorBot = digitalRead(Bot);
-  int sensorTop = digitalRead(Top);
-  enum State s = start;
+  float pVolt0 = pinRead0;//bottom
+  float pVolt1 = pinRead1;// top
+  enum State s = START;
   switch(s){
     case START:
+    Serial.println(pVolt0);
+    Serial.println(pVolt1);
  
-      if(sensorBot && sensorTop){
+      if(pVolt0 > 10 && pVolt1 > 10){
         s = BOTH_ON;
         }
-       else if(sensorBot && !sensorTop){
-          spinny.write(89);
+       else if(pVolt0 > 10 && pVolt1 < 10){
+          spinny.write(100);
           
        }
        else{
-        spinny.write(91);
+        spinny.write(80);
        }
       break;
      case BOTH_ON:
-      if(!sensorBot){
+      if(pVolt0 < 10){
         s = BOT_OFF;
       }
       break;
       case BOT_OFF:
-        if(sensorBot){
+        if(pVolt0 > 10){
           s = BOTH_ON;
         }
-        if(!sensorBot){
-          spinny.write(89);
+        if(pVolt0 < 10){
+          spinny.write(100);
         }
-        if(!sensorTop){
+        if(pVolt1 < 10){
           s = BOTH_OFF;
         }
         break;
        case BOTH_OFF:
-        s = start;
+        s = START;
         break;
   }
   //Serial.print(pVolt0);
@@ -62,7 +58,7 @@ void loop() {
   //Serial.print(pVolt1);
   //Serial.println();
 
-  delay(10000);
+  delay(500);
   // put your main code here, to run repeatedly:
 
 }
