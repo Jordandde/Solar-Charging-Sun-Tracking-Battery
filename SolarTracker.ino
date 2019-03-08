@@ -1,7 +1,9 @@
 #include <Servo.h>
+#include <math.h>
 
 #define inPin0 0  // Defining analog pin 0 as an input
 #define inPin1 1  // Defining analog pin 1 as an input
+#define inPin2 2 // Defining analog pin 2 as an input
 
 Servo spinny; // Declaration of servo
 
@@ -21,25 +23,43 @@ void setup() {
     Serial.println();
 }
 
+
 void loop() {
   
-    int diode1 = analogRead(inPin1) * 1.2;  // Servo 1
-    int diode0 = analogRead(inPin0);  // Servo 0
+    int diode2 = analogRead(inPin1) * 1.2;  // Diode 2
+    int diode1 = analogRead(inPin0);  // Diode 1
+    int diode3 = analogRead(inPin2); // Diode 3 (MIDDLE)
 
+    diode2 = log(diode2);
+    diode3 = log(diode3);
+
+    if (diode2 < 30) {
+      diode2 *= diode2;
+    }
     if (diode1 < 30) {
-      diode1 *= diode1;
-    }
-    if (diode0 < 30) {
-      diode0 *= diode0;
+      diode1 *= diode;
     }
 
-    if (diode1 != 0 || diode0 != 0) {
+    if (diode2 != 0 || diode1 != 0 || diode3 != 0) {
       Serial.println(diode1);
-      Serial.println(diode0);
+      Serial.println(diode2);
+      Serial.println(diode3);
     }
 
-    int diff = diode1 - diode0;
-    diff = map(diff, -100, 100, min, max);
+    int diff = diode2 - diode1;
+
+    if (diff > 5) {
+      diff = map(diff, -100, 100, min, max);
+    }
+
+    else if (diode3 > diode1 && diode3 > diode2) {
+      diff = map(diff, min, max, min/2, max/2);  
+    }
+
+    else {
+      diff = 90;
+    }
+
     spinny.write(diff);
 
 }
